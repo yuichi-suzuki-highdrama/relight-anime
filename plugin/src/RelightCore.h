@@ -64,6 +64,7 @@ struct LightParams {
 	float intensity;
 	float range;         /* 光の届く範囲の倍率 (1 = 既定。減衰と撮影寄りのグラデーションの広がりに掛ける) */
 	bool  show;          /* 光の玉とにじみを描く */
+	int   look;          /* この光源の当て方 0: Scene の Look と同じ  LOOK_ANIME / LOOK_CINEMATIC */
 	/* リムライト (光源ごと) */
 	bool  rim;           /* この光源でリムライトを付けるか */
 	float rimAmount;     /* 強さ */
@@ -369,6 +370,8 @@ struct LightCtx {
 	float presence;
 	float range;          /* 光の届く範囲の倍率 */
 	bool  show;           /* 光の玉とにじみを描く */
+	int   look;           /* この光源の当て方 (LOOK_ANIME / LOOK_CINEMATIC。Scene と同じなら Scene の値を入れてある) */
+	bool  lookOwn;        /* Light Look を光源で選んだ (Same as Scene でない) */
 	/* リムライト */
 	bool  rim;            /* この光源でリムライトを付けるか (Use Rim がオンで強さが 0 より大きい) */
 	float rimAmount;
@@ -433,6 +436,8 @@ inline void rlSetupFrame(ShadeContext &c)
 		L.intensity = lp.intensity;
 		L.range = clampf(lp.range, 0.05f, 10.f);
 		L.show = lp.show;
+		L.lookOwn = (lp.look == LOOK_ANIME || lp.look == LOOK_CINEMATIC);
+		L.look = L.lookOwn ? lp.look : rp.look;
 		L.rim = lp.rim && lp.rimAmount > 0.f;
 		L.rimAmount = rlMax(0.f, lp.rimAmount);
 		L.rimW = rlMax(1.f, lp.rimWidth * c.layerH / 1080.f);
@@ -1227,10 +1232,11 @@ RL_HD inline void shadePixel(const ShadeContext *c, int x, int y, const Rgba &sr
 	/* --- 照明 --- */
 	const float noise = rlNoise(u * 1024.f, v * 1024.f);
 	const V3 position = v3(u - 0.5f, v - 0.5f, surfaceZ(center));
-	/* 立体的な陰影の割合。Cinematic は原典どおり立体的な陰影だけ */
-	const float form = (rp->look == LOOK_CINEMATIC) ? 1.f : rp->form;
+	/* 立体的な陰影の割合。Cinematic は原典どおり立体的な陰影だけ。
+	   光源ごとの当て方 (Light Look) は光源のところで決め、ここは画面全体 (Scene の Look) の値 */
+	const float sceneForm = (rp->look == LOOK_CINEMATIC) ? 1.f : rp->form;
 	/* 凹みの暗さも立体的な陰影の一部 (深度の細部から作るので揺れやすい) */
-	const float occlusion = mixf(1.f, occlusionTerm, rp->occlusion * form);
+	const float occlusion = mixf(1.f, occlusionTerm, rp->occlusion * sceneForm);
 	const int steps = rlMax(1, rp->celSteps);
 
 	/* 入力 (premultiplied) → 非乗算の表示色 */
@@ -1249,6 +1255,12 @@ RL_HD inline void shadePixel(const ShadeContext *c, int x, int y, const Rgba &sr
 	float tintKeyMax = 0.f;   /* 影色を乗せる判定用 (撮影寄りの当たり具合を主にする) */
 	for (int k = 0; k < c->nL; ++k) {
 		const LightCtx &L = c->L[k];
+		/* この光源の当て方。Cinematic: 原典どおり (面の向きによる陰影、光をそのまま足す、セル調なし)。
+		   Anime: 元の色を保って光を足す (撮影寄りのグラデーションと面の向きを Form Shading で混ぜる) */
+		const bool cine = L.look == LOOK_CINEMATIC;
+		const float form = cine ? 1.f : rp->form;
+		/* 光源で Cinematic を選んだら段は付けない (Same as Scene なら以前どおり Cel Shading に従う) */
+		const float cel = (cine && L.lookOwn) ? 0.f : rp->cel;
 		const V3 toLight = L.pos - position;
 		const float distance = rlMax(length(toLight), 0.0001f);
 		const V3 lightDir = toLight * (1.f / distance);
@@ -1275,19 +1287,20 @@ RL_HD inline void shadePixel(const ShadeContext *c, int x, int y, const Rgba &sr
 		float key = mixf(paraKey, formKey, form);
 		/* 光の量。原典は wrapped^2 × 落ち影 × 距離の減衰。撮影寄りはグラデーションそのもの */
 		float amount = mixf(paraKey, wrapped * wrapped * shadow * falloff, form);
-		if (rp->cel > 0.f) {
+		if (cel > 0.f) {
 			const float q = celQuant(key, steps, rp->celSoft);
-			amount = mixf(amount, mixf(q, q * falloff, form), rp->cel);
-			key = mixf(key, q, rp->cel);
+			amount = mixf(amount, mixf(q, q * falloff, form), cel);
+			key = mixf(key, q, cel);
 		}
-		diffuse = diffuse + L.tint * (amount * L.intensity);
+		/* Anime の光源は元の色を保つよう控えめに足す (以前は画面全体で掛けていた割合を光源ごとに) */
+		diffuse = diffuse + L.tint * (amount * L.intensity * (cine ? 1.f : ANIME_LIGHT_GAIN));
 		const float weight = saturate(L.intensity / 0.5f);
 		keyMax = rlMax(keyMax, key * weight);
 		/* 影色の判定は、時間で揺れない撮影寄りの当たり具合を主にする。立体的な当たり具合は Form Shading の 2 乗の割合でだけ混ぜる
 		   (しきい値で影色を乗せるので、揺れやすい値が混ざると動画でちらつく) */
 		{
 			float pk = paraKey;
-			if (rp->cel > 0.f) pk = mixf(pk, celQuant(pk, steps, rp->celSoft), rp->cel);
+			if (cel > 0.f) pk = mixf(pk, celQuant(pk, steps, rp->celSoft), cel);
 			tintKeyMax = rlMax(tintKeyMax, mixf(pk, key, form) * weight);
 		}
 		anyLight = rlMax(anyLight, weight);
@@ -1300,7 +1313,7 @@ RL_HD inline void shadePixel(const ShadeContext *c, int x, int y, const Rgba &sr
 		const float g1 = 1.f - saturate(normal.z), g2 = g1 * g1;
 		const float grazing = g2 * g2 * g1;
 		const float highlight = lobe * (SPECULAR_F0 + (1.f - SPECULAR_F0) * grazing);
-		spec = spec + L.tint * (highlight * falloff * shadow * occlusion * rp->specular * L.intensity * form);
+		spec = spec + L.tint * (highlight * falloff * shadow * occlusion * rp->specular * L.intensity * form * (cine ? 1.f : 0.5f));
 
 		/* リムライト: 先に作ってぼかした下地 (rlRimMask) に、光源の色・強さ・距離を付ける */
 		if (c->rimMask) {
@@ -1328,12 +1341,8 @@ RL_HD inline void shadePixel(const ShadeContext *c, int x, int y, const Rgba &sr
 	const V3 ambient = v3(rp->ambient[0], rp->ambient[1], rp->ambient[2]);
 
 	V3 lit = mul(mul(albedo, ambient), shadeMul) * (rp->exposure * occlusion);
-	if (rp->look == LOOK_CINEMATIC) {
-		lit = lit + mul(albedo, diffuse) + spec;
-	} else {
-		/* Anime: 元の色を保ったまま光を足す */
-		lit = lit + mul(albedo, diffuse) * ANIME_LIGHT_GAIN + spec * 0.5f;
-	}
+	/* 光の強さの割合 (Anime は控えめ) は光源ごとに掛けてある */
+	lit = lit + mul(albedo, diffuse) + spec;
 	/* リムは面の色に沿った光として足す (暗い色の上でも少し見えるように白を少しだけ混ぜる) */
 	lit = lit + mul(mix3(albedo, v3(1.f, 1.f, 1.f), 0.3f), rimAdd);
 

@@ -115,8 +115,9 @@ Auto の「Clean Cache...」を押すと、今のプロジェクトで使って�
 | | Light Color / Intensity | 光の色と強さ |
 | | Range | 光の届く範囲の倍率（1 = 既定。上げると遠くまで明るく、下げると光源の近くだけ）。コンポビューに点線の輪で目安を描く |
 | | Show Light | この光源の光の玉とにじみを描く |
+| | Light Look | この光源の当て方。Same as Scene（Scene の Look に従う）/ Anime（元の色を保って控えめに足す）/ Cinematic（面の向きで陰影を作り、光をそのまま足す。セル調の段なし）。全体の暗さ・影色・最後の色の整え方は Scene の Look のまま |
 | | Rim（グループ） | この光源のリムライト。中身は下の「Rim」の表。Light 1 は以前の Anime Style のリムの値を引き継ぐ |
-| Light 2 / Light 3 | Enable / Position / Height / Color / Intensity / Range / Show Light / Rim | 2 灯目・3 灯目（既定は無効。Show Light の既定はオフ）。位置は画面の外にも置ける（光の玉を見せない補助光） |
+| Light 2 / Light 3 | Enable / Position / Height / Color / Intensity / Range / Show Light / Light Look / Rim | 2 灯目・3 灯目（既定は無効。Show Light の既定はオフ）。位置は画面の外にも置ける（光の玉を見せない補助光） |
 | Scene | Look | Anime（元の色を保つ）/ Cinematic（原典: 全体を暗くしてフィルム風トーンマップ） |
 | | Ambient / Ambient Color | 元映像の明るさと色味。下げるほど光が際立つ |
 | | Relief | 深度から作る凹凸の強さ |

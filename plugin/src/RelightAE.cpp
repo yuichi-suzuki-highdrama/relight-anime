@@ -552,28 +552,28 @@ static PF_Err GlobalSetup(PF_InData *in_data, PF_OutData *out_data, PF_ParamDef 
 
 /* 光源ごとのパラメータの index と ID (並びは 3 個とも同じ。Light 1 だけ Enable が無い) */
 struct LightSlots {
-	A_long enable, position, height, color, intensity, range, show;
+	A_long enable, position, height, color, intensity, range, show, look;
 	A_long rimTopic, rim, rimAmount, rimWidth, rimSoft, rimSmooth, rimPlacement, rimColor, rimSpread, rimReach, rimTopicEnd;
 };
 static const LightSlots LIGHT_IDX[RELIGHT_MAX_LIGHTS] = {
-	{-1, RELIGHT_LIGHT_POSITION, RELIGHT_LIGHT_HEIGHT, RELIGHT_LIGHT_COLOR, RELIGHT_LIGHT_INTENSITY, RELIGHT_LIGHT_RANGE, RELIGHT_SHOW_LIGHT,
+	{-1, RELIGHT_LIGHT_POSITION, RELIGHT_LIGHT_HEIGHT, RELIGHT_LIGHT_COLOR, RELIGHT_LIGHT_INTENSITY, RELIGHT_LIGHT_RANGE, RELIGHT_SHOW_LIGHT, RELIGHT_LIGHT_LOOK,
 	 RELIGHT_TOPIC_LIGHT_RIM, RELIGHT_LIGHT_RIM, RELIGHT_RIM, RELIGHT_RIM_WIDTH, RELIGHT_RIM_SOFTNESS, RELIGHT_RIM_SMOOTH,
 	 RELIGHT_RIM_PLACEMENT, RELIGHT_RIM_COLOR, RELIGHT_RIM_SPREAD, RELIGHT_RIM_REACH, RELIGHT_TOPIC_LIGHT_RIM_END},
-	{RELIGHT_LIGHT2_ENABLE, RELIGHT_LIGHT2_POSITION, RELIGHT_LIGHT2_HEIGHT, RELIGHT_LIGHT2_COLOR, RELIGHT_LIGHT2_INTENSITY, RELIGHT_LIGHT2_RANGE, RELIGHT_LIGHT2_SHOW,
+	{RELIGHT_LIGHT2_ENABLE, RELIGHT_LIGHT2_POSITION, RELIGHT_LIGHT2_HEIGHT, RELIGHT_LIGHT2_COLOR, RELIGHT_LIGHT2_INTENSITY, RELIGHT_LIGHT2_RANGE, RELIGHT_LIGHT2_SHOW, RELIGHT_LIGHT2_LOOK,
 	 RELIGHT_TOPIC_LIGHT2_RIM, RELIGHT_LIGHT2_RIM, RELIGHT_LIGHT2_RIM_AMOUNT, RELIGHT_LIGHT2_RIM_WIDTH, RELIGHT_LIGHT2_RIM_SOFTNESS, RELIGHT_LIGHT2_RIM_SMOOTH,
 	 RELIGHT_LIGHT2_RIM_PLACEMENT, RELIGHT_LIGHT2_RIM_COLOR, RELIGHT_LIGHT2_RIM_SPREAD, RELIGHT_LIGHT2_RIM_REACH, RELIGHT_TOPIC_LIGHT2_RIM_END},
-	{RELIGHT_LIGHT3_ENABLE, RELIGHT_LIGHT3_POSITION, RELIGHT_LIGHT3_HEIGHT, RELIGHT_LIGHT3_COLOR, RELIGHT_LIGHT3_INTENSITY, RELIGHT_LIGHT3_RANGE, RELIGHT_LIGHT3_SHOW,
+	{RELIGHT_LIGHT3_ENABLE, RELIGHT_LIGHT3_POSITION, RELIGHT_LIGHT3_HEIGHT, RELIGHT_LIGHT3_COLOR, RELIGHT_LIGHT3_INTENSITY, RELIGHT_LIGHT3_RANGE, RELIGHT_LIGHT3_SHOW, RELIGHT_LIGHT3_LOOK,
 	 RELIGHT_TOPIC_LIGHT3_RIM, RELIGHT_LIGHT3_RIM, RELIGHT_LIGHT3_RIM_AMOUNT, RELIGHT_LIGHT3_RIM_WIDTH, RELIGHT_LIGHT3_RIM_SOFTNESS, RELIGHT_LIGHT3_RIM_SMOOTH,
 	 RELIGHT_LIGHT3_RIM_PLACEMENT, RELIGHT_LIGHT3_RIM_COLOR, RELIGHT_LIGHT3_RIM_SPREAD, RELIGHT_LIGHT3_RIM_REACH, RELIGHT_TOPIC_LIGHT3_RIM_END}};
 /* Light 1 のリムは以前の Anime Style のリムの ID をそのまま使う (保存したプロジェクトの値を引き継ぐ) */
 static const LightSlots LIGHT_ID[RELIGHT_MAX_LIGHTS] = {
-	{0, ID_LIGHT_POSITION, ID_LIGHT_HEIGHT, ID_LIGHT_COLOR, ID_LIGHT_INTENSITY, ID_LIGHT_RANGE, ID_SHOW_LIGHT,
+	{0, ID_LIGHT_POSITION, ID_LIGHT_HEIGHT, ID_LIGHT_COLOR, ID_LIGHT_INTENSITY, ID_LIGHT_RANGE, ID_SHOW_LIGHT, ID_LIGHT_LOOK,
 	 ID_TOPIC_LIGHT_RIM, ID_LIGHT_RIM, ID_RIM, ID_RIM_WIDTH, ID_RIM_SOFTNESS, ID_RIM_SMOOTH,
 	 ID_RIM_PLACEMENT, ID_RIM_COLOR, ID_RIM_SPREAD, ID_RIM_REACH, ID_TOPIC_LIGHT_RIM_END},
-	{ID_LIGHT2_ENABLE, ID_LIGHT2_POSITION, ID_LIGHT2_HEIGHT, ID_LIGHT2_COLOR, ID_LIGHT2_INTENSITY, ID_LIGHT2_RANGE, ID_LIGHT2_SHOW,
+	{ID_LIGHT2_ENABLE, ID_LIGHT2_POSITION, ID_LIGHT2_HEIGHT, ID_LIGHT2_COLOR, ID_LIGHT2_INTENSITY, ID_LIGHT2_RANGE, ID_LIGHT2_SHOW, ID_LIGHT2_LOOK,
 	 ID_TOPIC_LIGHT2_RIM, ID_LIGHT2_RIM, ID_LIGHT2_RIM_AMOUNT, ID_LIGHT2_RIM_WIDTH, ID_LIGHT2_RIM_SOFTNESS, ID_LIGHT2_RIM_SMOOTH,
 	 ID_LIGHT2_RIM_PLACEMENT, ID_LIGHT2_RIM_COLOR, ID_LIGHT2_RIM_SPREAD, ID_LIGHT2_RIM_REACH, ID_TOPIC_LIGHT2_RIM_END},
-	{ID_LIGHT3_ENABLE, ID_LIGHT3_POSITION, ID_LIGHT3_HEIGHT, ID_LIGHT3_COLOR, ID_LIGHT3_INTENSITY, ID_LIGHT3_RANGE, ID_LIGHT3_SHOW,
+	{ID_LIGHT3_ENABLE, ID_LIGHT3_POSITION, ID_LIGHT3_HEIGHT, ID_LIGHT3_COLOR, ID_LIGHT3_INTENSITY, ID_LIGHT3_RANGE, ID_LIGHT3_SHOW, ID_LIGHT3_LOOK,
 	 ID_TOPIC_LIGHT3_RIM, ID_LIGHT3_RIM, ID_LIGHT3_RIM_AMOUNT, ID_LIGHT3_RIM_WIDTH, ID_LIGHT3_RIM_SOFTNESS, ID_LIGHT3_RIM_SMOOTH,
 	 ID_LIGHT3_RIM_PLACEMENT, ID_LIGHT3_RIM_COLOR, ID_LIGHT3_RIM_SPREAD, ID_LIGHT3_RIM_REACH, ID_TOPIC_LIGHT3_RIM_END}};
 
@@ -613,6 +613,12 @@ static PF_Err AddLightParams(PF_InData *in_data, int k, const Preset &p)
 	   以前のプロジェクトで急に光の玉が出ないように) */
 	AEFX_CLR_STRUCT(def);
 	PF_ADD_CHECKBOXX("Show Light", k == 0 ? p.show : FALSE, 0, id.show);
+
+	/* この光源の当て方。Same as Scene は Scene の Look に従う (以前のプロジェクトはこれ)。
+	   Cinematic: 面の向きで陰影を作り、光をそのまま足す (原典どおり)。Anime: 元の色を保って控えめに足す。
+	   画面全体の暗さ (Ambient)・影色・最後の色の整え方は Scene の Look のまま */
+	AEFX_CLR_STRUCT(def);
+	PF_ADD_POPUP("Light Look", 3, 1, "Same as Scene|Anime|Cinematic", id.look);
 
 	/* --- Rim (この光源のリムライト) --- */
 	AEFX_CLR_STRUCT(def);
@@ -879,7 +885,7 @@ static PF_Err UpdateLightUI(PF_InData *in_data, PF_ParamDef *params[])
 	for (int k = 1; k < RELIGHT_MAX_LIGHTS && !err; ++k) {
 		const LightSlots &s = LIGHT_IDX[k];
 		const bool on = params[s.enable]->u.bd.value != 0;
-		const A_long idx[] = {s.position, s.height, s.color, s.intensity, s.range, s.show, s.rim, s.rimAmount, s.rimWidth,
+		const A_long idx[] = {s.position, s.height, s.color, s.intensity, s.range, s.show, s.look, s.rim, s.rimAmount, s.rimWidth,
 		                      s.rimSoft, s.rimSmooth, s.rimPlacement, s.rimColor, s.rimSpread, s.rimReach};
 		for (A_long i : idx) {
 			const bool disabled = (params[i]->ui_flags & PF_PUI_DISABLED) != 0;
@@ -921,6 +927,7 @@ static void ApplyPreset(PF_InData *in_data, PF_ParamDef *params[], const Preset 
 		setF(s.intensity, l.intensity);
 		setF(s.range, l.range);
 		setB(s.show, p.show);
+		params[s.look]->u.pd.value = 1; changed(s.look);   /* Same as Scene */
 		/* リムはプリセットでは全部の光源が同じ値 */
 		setB(s.rim, l.rim);
 		setF(s.rimAmount, p.rim);
@@ -1036,6 +1043,7 @@ static PF_Err ReadRenderParams(PF_InData *in_data, float layerW, float layerH, R
 		L.intensity    = r.fs(s.intensity, 3.f);
 		L.range        = std::max(0.05f, r.fs(s.range, 1.f));
 		L.show         = r.checkbox(s.show, k == 0);
+		L.look         = (int)r.popup(s.look, 1) - 1;   /* 0: Scene と同じ  1: Anime  2: Cinematic */
 		L.rim          = r.checkbox(s.rim, true);
 		L.rimAmount    = std::max(0.f, r.fs(s.rimAmount, 0.f));
 		L.rimWidth     = std::max(1.f, r.fs(s.rimWidth, 6.f));
@@ -1535,7 +1543,9 @@ static PF_Err DrawLightGizmos(PF_InData *in_data, PF_ParamDef *params[], PF_Even
 
 		if (font) {
 			wchar_t label[32];
-			swprintf(label, 32, L"%d  h %.2f%s", k + 1, z, z < 0.f ? L" (behind)" : L"");
+			const A_long lk = params[s.look]->u.pd.value;
+			swprintf(label, 32, L"%d  h %.2f%s%s", k + 1, z, z < 0.f ? L" (behind)" : L"",
+			         lk == 2 ? L"  Anime" : (lk == 3 ? L"  Cine" : L""));
 			DRAWBOT_UTF16Char text[32];
 			for (int i = 0; i < 32; ++i) { text[i] = (DRAWBOT_UTF16Char)label[i]; if (!label[i]) break; }
 			DRAWBOT_PointF32 org;

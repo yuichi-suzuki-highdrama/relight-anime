@@ -85,7 +85,7 @@ With Look = Anime (default) the effect works as below. Look = Cinematic gives th
 | Line-art protection | Thin areas darker than their surroundings are treated as lines and restored to their original colour; large dark areas such as black hair are excluded |
 | Depth volume | Depth models trained on live action tend to see anime characters as flat, so depth is bulged forward by distance from the silhouette |
 | Snap depth to lines | When upscaling depth (short side 518 px) to the footage size, samples whose footage colour is close get more weight (joint bilateral upsampling), so depth edges follow the line art |
-| Three lights | Each light has position, height, colour, intensity, Range, Show Light and its own rim settings |
+| Three lights | Each light has position, height, colour, intensity, Range, Show Light, Light Look (Anime / Cinematic per light) and its own rim settings |
 | Rim light | §4.1 |
 
 ### 4.1 Rim light

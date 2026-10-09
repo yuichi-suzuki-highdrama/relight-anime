@@ -8,6 +8,7 @@
  *         光源 1: lx ly (レイヤー px), lz, intensity, r g b (0..1)
  *         光源 2/3: l2 (0/1), l2x l2y l2z l2i l2r l2g l2b (l3 も同様)
  *         lrange / l2range / l3range (光の届く範囲の倍率)、lshow / l2show / l3show (光の玉、show は全部の光源)
+ *         llook / l2look / l3look (光源ごとの当て方 0: Scene と同じ 1: Anime 2: Cinematic)
  *         ambient, relief, specular, shadow, occlusion,
  *         tint (影色の強さ), sr sg sb (影色 0..1), smooth (陰影のならし), dither (輪郭のディザ), cel, steps, soft, line, lineth, volume
  *         リム (頭に何も付けなければ全部の光源、l2 / l3 を付けるとその光源だけ。強さは rim、光源ごとは l2rimamt):
@@ -113,6 +114,7 @@ int main(int argc, char **argv)
 		else if (k == "lrim" || (li > 0 && key == "rim")) L.rim = v != 0.f;
 		else if (k == "lrange" || (li > 0 && key == "range")) L.range = v;
 		else if (k == "lshow") L.show = v != 0.f;
+		else if (k == "llook" || (li > 0 && key == "look")) L.look = (int)v;   /* 0: Scene と同じ  1: Anime  2: Cinematic */
 		else if (li > 0 && key != "rim" && rimSet(key, v, false)) {}
 		else if (li == 0 && rimSet(k, v, true)) {}
 		else if (key == "lx" || (li > 0 && key == "x")) lx[li] = v;

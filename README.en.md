@@ -101,8 +101,9 @@ only the background around them glows, the front of the character takes the shad
 | | Light Color / Intensity | Colour and strength |
 | | Range | Reach of the light (1 = default; higher reaches farther, lower stays near the light). Shown as a dotted circle in the comp viewer |
 | | Show Light | Draw this light's bulb and glow |
+| | Light Look | How this light is applied: Same as Scene (follow Scene > Look) / Anime (keeps the original colours, adds light gently) / Cinematic (shading from surface orientation, light added at full strength, no cel steps). Overall darkness, shadow colour and the final tone stay with Scene > Look |
 | | Rim (group) | This light's rim light; see the Rim table below |
-| Light 2 / Light 3 | Enable / Position / Height / Color / Intensity / Range / Show Light / Rim | Second and third lights (disabled by default; Show Light off by default). They may be placed off screen as fill lights |
+| Light 2 / Light 3 | Enable / Position / Height / Color / Intensity / Range / Show Light / Light Look / Rim | Second and third lights (disabled by default; Show Light off by default). They may be placed off screen as fill lights |
 | Scene | Look | Anime (keeps original colours) / Cinematic (original: darkens everything, filmic tone map) |
 | | Ambient / Ambient Color | Brightness and tint of the original picture; lower makes the light stand out |
 | | Relief | Strength of relief from depth |
