@@ -1,0 +1,16 @@
+[Unit]
+Description=Relight Anime depth server (Video Depth Anything; exits when idle)
+Requires=relight-depth.socket
+
+[Service]
+Type=simple
+# <ROOT> を置き場所に書き換える / replace <ROOT> with the install folder
+WorkingDirectory=<ROOT>/server
+ExecStart=<ROOT>/venv/bin/python -u <ROOT>/server/depth_server.py
+Environment=PYTHONUNBUFFERED=1
+Environment=RELIGHT_MODEL_DIR=<ROOT>/models
+Environment=RELIGHT_IDLE_EXIT=300
+Environment=HF_HUB_OFFLINE=1
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true

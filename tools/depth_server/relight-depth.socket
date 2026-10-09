@@ -1,0 +1,8 @@
+[Unit]
+Description=Relight Anime depth server socket (loopback only; started on demand)
+
+[Socket]
+ListenStream=127.0.0.1:8190
+
+[Install]
+WantedBy=sockets.target

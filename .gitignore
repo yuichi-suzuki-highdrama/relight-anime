@@ -1,0 +1,21 @@
+# ビルド成果物
+plugin/build/
+*.aex
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.lib
+# 生成キャッシュ（EXR連番）
+cache/
+# 一時
+*.log
+__pycache__/
+.claude/
+tools/harness/build/
+models/*.onnx
+models/*.onnx.data
+tools/depth/build/
+
+# 深度推定プログラムのビルド成果物 (depth/build.ps1 で作る)
+depth/build/

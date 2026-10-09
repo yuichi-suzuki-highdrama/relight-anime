@@ -1,0 +1,4 @@
+# Linux で使うファイルは LF のまま
+*.service text eol=lf
+*.socket text eol=lf
+tools/depth_server/*.py text eol=lf
