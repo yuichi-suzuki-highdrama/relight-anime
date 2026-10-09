@@ -166,6 +166,7 @@ Requirements: Windows 11, After Effects 2025 or later, Visual Studio 2022 Build 
 
 | Component | Terms |
 |---|---|
+| This project | MIT ([LICENSE](../LICENSE)) |
 | TypeGPU (origin of the lighting model) | MIT; keep the copyright notice (shown in the effect's About) |
 | Video Depth Anything Small | Apache-2.0 |
 | Video Depth Anything Large (used by Remote Quality) | **CC-BY-NC-4.0 (non-commercial)**; use Small for commercial work |

@@ -165,6 +165,7 @@ Look = Anime（既定）では次のようにしています。Look = Cinematic 
 
 | 対象 | 条件 |
 |---|---|
+| このプロジェクト | MIT（[LICENSE](../LICENSE)） |
 | TypeGPU（照明モデルの移植元） | MIT。著作権表示を残す（エフェクトの About に記載） |
 | Video Depth Anything Small | Apache-2.0 |
 | Video Depth Anything Large（Remote Quality で使用） | **CC-BY-NC-4.0（非商用）**。商用では Small を使う |

@@ -158,5 +158,7 @@ Rim (inside each Light; set per light)
 
 ## Licences
 
+This project is released under the [MIT License](LICENSE). Third-party notices are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
 The lighting model is ported from TypeGPU (MIT, Software Mansion). Video Depth Anything Small is Apache-2.0; **Large is CC-BY-NC-4.0 (non-commercial)** —
 Remote Quality uses Large. ONNX Runtime headers are MIT. The After Effects SDK is not included. See [docs/how-it-works.en.md](docs/how-it-works.en.md#10-licences).

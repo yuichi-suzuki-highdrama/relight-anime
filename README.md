@@ -174,3 +174,9 @@ Rim（各 Light の中。光源ごとに設定する）
 - 設置の手順と systemd の雛形は [tools/depth_server/README.md](tools/depth_server/README.md)。
 - 送り先は `%APPDATA%\SRLM\RelightAnime.ini` の `remote_server`（`plugin\build.ps1 -RemoteServer <URL>` で書ける）。空ならこの PC で作る。
 - 目安（GB10、8 秒・192 コマ）: 小さいモデル（Fast）約 45 秒、大きいモデル（Quality）約 2 分 20 秒。
+
+## ライセンス
+
+このプロジェクトは [MIT ライセンス](LICENSE) です。他者のソフトウェアの表示は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) にあります。
+
+照明モデルは TypeGPU（MIT、Software Mansion）からの移植です。Video Depth Anything の Small は Apache-2.0、**Large は CC-BY-NC-4.0（非商用）** で、Remote Quality で使います。After Effects SDK は含めていません。詳しくは [docs/how-it-works.ja.md](docs/how-it-works.ja.md#10-ライセンスの注意)。
